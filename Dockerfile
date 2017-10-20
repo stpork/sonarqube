@@ -11,9 +11,11 @@ USER root
 EXPOSE 9000
 ADD root /
 
+ARG DOWNLOAD_URL=https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-${SONAR_VERSION}.zip
+
 RUN set -x \
     && cd /opt \
-    && curl -o sonarqube.zip -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
+    && curl -o sonarqube.zip -L --silent ${DOWNLOAD_URL} \
     && unzip sonarqube.zip \
     && mv sonarqube-$SONAR_VERSION sonarqube \
     && rm sonarqube.zip* \
