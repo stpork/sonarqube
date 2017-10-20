@@ -1,4 +1,4 @@
-FROM openjdk:8u121-alpine
+FROM jboss/base-jdk:8
 MAINTAINER stpork from Mordor team
 
 ENV SONAR_VERSION=6.6 \
