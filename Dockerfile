@@ -3,9 +3,9 @@ MAINTAINER stpork from Mordor team
 
 ENV SONAR_VERSION=6.6 \
     SONARQUBE_HOME=/opt/sonarqube \
-    SONARQUBE_JDBC_USERNAME=sonar \
-    SONARQUBE_JDBC_PASSWORD=sonar \
-    SONARQUBE_JDBC_URL=
+    SONARQUBE_JDBC_USERNAME=sonaruser \
+    SONARQUBE_JDBC_PASSWORD=sonarpass \
+    SONARQUBE_JDBC_URL=jdbc:postgresql://postgresql/sonarqube
 
 USER root
 EXPOSE 9000
