@@ -28,8 +28,8 @@ RUN useradd -r sonar
 RUN /usr/bin/fix-permissions $SONARQUBE_HOME \
     && chmod 775 $SONARQUBE_HOME/bin/run.sh
 
-VOLUME /opt/sonarqube/extensions
-VOLUME /opt/sonarqube/logs
+VOLUME ["/opt/sonarqube/extensions"]
+VOLUME ["/opt/sonarqube/logs"]
 
 USER sonar
 ENTRYPOINT ["./bin/run.sh"]
