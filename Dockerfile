@@ -1,35 +1,27 @@
-FROM jboss/base-jdk:8
+FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest
+
 MAINTAINER stpork from Mordor team
 
 ENV SONAR_VERSION=6.6 \
-    SONARQUBE_HOME=/opt/sonarqube \
-    SONARQUBE_JDBC_USERNAME=sonaruser \
-    SONARQUBE_JDBC_PASSWORD=sonarpass \
-    SONARQUBE_JDBC_URL=jdbc:postgresql://postgresql/sonarqube
+    SONARQUBE_HOME=/opt/sonarqube
 
 USER root
 EXPOSE 9000
+RUN cd /tmp \
+&& curl -o sonarqube.zip -fsSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
+&& cd /opt \
+&& unzip -q /tmp/sonarqube.zip \
+&& mv sonarqube-$SONAR_VERSION sonarqube \
+&& rm /tmp/sonarqube.zip*
+
 ADD root /
 
-ARG DOWNLOAD_URL=https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-${SONAR_VERSION}.zip
-
-RUN set -x \
-    && cd /opt \
-    && curl -o sonarqube.zip -L --silent ${DOWNLOAD_URL} \
-    && unzip sonarqube.zip \
-    && mv sonarqube-$SONAR_VERSION sonarqube \
-    && rm sonarqube.zip* \
-    && rm -rf $SONARQUBE_HOME/bin/*
-
-WORKDIR $SONARQUBE_HOME
-COPY run.sh $SONARQUBE_HOME/bin/
-
-RUN useradd -r sonar
-RUN /usr/bin/fix-permissions $SONARQUBE_HOME \
-    && chmod 775 $SONARQUBE_HOME/bin/run.sh
-
-VOLUME ["${SONARQUBE_HOME}/extensions"]
-VOLUME ["${SONARQUBE_HOME}/logs"]
+RUN useradd -r sonar \
+&& chmod 775 $SONARQUBE_HOME/bin/run_sonarqube.sh \
+&& /usr/bin/fix-permissions /opt/sonarqube
 
 USER sonar
-ENTRYPOINT ["./bin/run.sh"]
+WORKDIR $SONARQUBE_HOME
+VOLUME $SONARQUBE_HOME/data
+
+ENTRYPOINT ["./bin/run_sonarqube.sh"]
