@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest
 
 MAINTAINER stpork from Mordor team
 
-ENV SONAR_VERSION=6.6 \
+ENV SONAR_VERSION=6.7 \
     SONARQUBE_HOME=/opt/sonarqube
 
 USER root
