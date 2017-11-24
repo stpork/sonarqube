@@ -1,27 +1,36 @@
-FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest
+FROM openjdk:8-alpine
 
 MAINTAINER stpork from Mordor team
 
 ENV SONAR_VERSION=6.7 \
-    SONARQUBE_HOME=/opt/sonarqube
+SONARQUBE_HOME=/opt/sonarqube \
+SONARQUBE_JDBC_USERNAME=sonaruser \
+SONARQUBE_JDBC_PASSWORD=sonar-pass \
+SONARQUBE_JDBC_URL=jdbc:postgresql://postgresql:5432/sonarqube
 
-USER root
+# Http port
 EXPOSE 9000
-RUN cd /tmp \
-&& curl -o sonarqube.zip -fsSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
+
+RUN addgroup -S sonarqube && adduser -S -G sonarqube sonarqube
+
+RUN set -x \
+&& apk update -qq \
+&& update-ca-certificates \
+&& apk add --no-cache ca-certificates curl bash unzip su-exec libressl \
+&& rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/* \
+&& mkdir /opt \
 && cd /opt \
-&& unzip -q /tmp/sonarqube.zip \
+&& curl -fsSL \
+"https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip" \
+-o sonarqube.zip \
+&& unzip -q sonarqube.zip \
 && mv sonarqube-$SONAR_VERSION sonarqube \
-&& rm /tmp/sonarqube.zip*
+&& chown -R sonarqube:sonarqube sonarqube \
+&& rm sonarqube.zip* \
+&& rm -rf $SONARQUBE_HOME/bin/*
 
-ADD root /
+VOLUME "$SONARQUBE_HOME/data"
 
-RUN useradd -r sonar \
-&& chmod 775 $SONARQUBE_HOME/bin/run_sonarqube.sh \
-&& /usr/bin/fix-permissions /opt/sonarqube
-
-USER sonar
 WORKDIR $SONARQUBE_HOME
-VOLUME $SONARQUBE_HOME/data
-
-ENTRYPOINT ["./bin/run_sonarqube.sh"]
+COPY run.sh $SONARQUBE_HOME/bin/
+ENTRYPOINT ["./bin/run.sh"]
