@@ -14,7 +14,7 @@ RUN set -x \
 && apk update -qq \
 && update-ca-certificates \
 && apk add --no-cache ca-certificates curl bash unzip su-exec libressl tini \
-&& rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/* \
+&& rm -rf /var/cache/apk/* /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/* \
 && mkdir /opt \
 && cd /opt \
 && curl -fsSL \
