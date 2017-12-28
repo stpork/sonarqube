@@ -2,7 +2,7 @@ FROM openjdk:8-alpine
 
 MAINTAINER stpork from Mordor team
 
-ENV SONAR_VERSION=6.7 \
+ENV SONAR_VERSION=6.7.1 \
 SONAR_HOME=/opt/sonarqube \
 SONAR_JDBC_USERNAME=sonaruser \
 SONAR_JDBC_PASSWORD=sonar-pass \
